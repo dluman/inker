@@ -9,8 +9,7 @@ class Page:
 	_PADDING = None
 	_BORDER = 25
 	_MAXCOLS = 4
-	_MAXROWS = 3
-
+	_MAXROWS = 4
 
 	def __init__(self,size):
 		self._SIZE = size
@@ -22,7 +21,7 @@ class Page:
 		space = (self._SIZE[0]-self._MARGIN/2, self._SIZE[1]-self._MARGIN/2)
 		for col in grid:
 			origin, offset = self._MARGIN/4, 0
-			if col > 1: self._PADDING = 0 #self._PADDING = self._MARGIN/(col)
+			if col > 1: self._PADDING = 0
 			else: self._PADDING = 0
 			col_size = space[0]/col
 			for x in range(col):
@@ -50,10 +49,12 @@ class Page:
     			stop = min(limit, n - size + 1) + 1
     			for i in range(start, stop):
         			for tail in sum_to_n(n - i, size - 1, i):
-            				yield [i] + tail
+					yield [i] + tail
 		num_rows = 0
 		while num_rows == 0 or num_rows > n: num_rows = random.randint(1,self._MAXROWS)
-		try: grid = random.choice([grid for grid in sum_to_n(n,num_rows) if max(grid) <= self._MAXCOLS])
+		try:
+			grid = random.choice([grid for grid in sum_to_n(n,num_rows) if max(grid) <= self._MAXCOLS-1])
+			random.shuffle(grid)
 		except IndexError: self.divisions(n)
 		return(grid)
 
@@ -68,8 +69,7 @@ class Page:
 				d.rectangle([(x1,y1),(x2,y2)],outline='black',fill='black')
 				#ARTBOX
 				d.rectangle([(x1+self._BORDER,y1+self._BORDER),(x2-self._BORDER,y2-self._BORDER)],outline='black',fill='white')
-				#artbox.append([(x1+self._BORDER,y1+self._BORDER),(x2-self._BORDER,y2-self._BORDER)])
-				artbox.append([(x2-self._BORDER,y2-self._BORDER)])
+				artbox.append([(x1+self._BORDER,y1+self._BORDER),(x2-self._BORDER,y2-self._BORDER)])
 		return img, artbox
 
 	def make(self,n):
@@ -77,5 +77,5 @@ class Page:
 		rows,columns = self.gridify(grid)
 		img = Image.new('RGB',self._SIZE)
 		img, artbox = self.draw(rows,columns,img)
-		img.save("test.png")
+		img.save('layouts/test.png')
 		return img, artbox

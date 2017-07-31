@@ -19,19 +19,19 @@ class Lettering:
 
 	_FACE = None
 	_TYPE = None
-	_SIZE = 60
+	_SIZE = 50
 
 	def makeBox(self, dim, img, lh, iw, ih):
 		#iw,ih = img.size
 		tw,th = dim
 		bg = (255,255,153)
-		#locs = [((iw*.06),(ih*.06)),
-		#        ((iw*.985)-(tw+self._SIZE),(ih*.06)),
+		#locs = [((iw*.06),(ih*.04)),
+		#        ((iw*.985)-(tw+self._SIZE),(ih*.04)),
 		#	((iw*.06),(ih*.90)-(lh)),
 		#	((iw*.985)-(tw+self._SIZE),(ih*.90)-(lh)),
 		#	((iw*.06),(ih*.50)),
 		#	((iw*.985)-(tw+self._SIZE),(ih*.50))]
-		locs = [((iw,ih-(lh)))]
+		locs = [((iw*.06,ih*.04))]
 		loc_x,loc_y = random.choice(locs)
 		draw = ImageDraw.Draw(img)
 		draw.rectangle([(loc_x,loc_y),
@@ -72,25 +72,22 @@ class Lettering:
 	#	return img
 
 
-	def makeLettering(self, s, img, artbox):
+	def makeLettering(self, s, img, iw, ih):
 		def resize(s):
 			seed = random.randint(15,25)
 			frag = textwrap.wrap(s[0],seed)
 			return frag
-		next_x, next_y = 0, 0
-		for box in artbox:
-			x = box[0][0]
-			y = box[1][0]
-			next_x = box[1][0]
-			next_y = box[1][1]
-			tw, th = self._TYPE.getsize(max(s,key=len))
-			if tw > next_x-x:
-				s = resize(s)
-			else:
-				sets = [self._TYPE.getsize(frag) for frag in s]
-				tw,th = max(sets)
-				if len(s) > 1: lh = ((len(s) * th) + self._SIZE)
-				else: lh = self._SIZE
-				img, loc = self.makeBox((tw,lh),img,lh,x,y)
-				img = self.setText(img,loc,s,lh)
-		return img
+		prev_x, prev_y = 0, 0
+		iw,ih = box[0][0
+		tw, th = self._TYPE.getsize(max(s,key=len))
+		if tw > (iw-(iw*.025)):
+			s = resize(s)
+			self.makeLettering(s,img)
+		else:
+			sets = [self._TYPE.getsize(frag) for frag in s]
+			tw,th = max(sets)
+			if len(s) > 1: lh = ((len(s) * th) + self._SIZE)
+			else: lh = self._SIZE
+			img,loc = self.makeBox((tw,lh),img,lh,iw,ih)
+			img = self.setText(img,loc,s,lh)
+	return img
