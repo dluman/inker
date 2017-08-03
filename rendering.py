@@ -21,17 +21,11 @@ class Lettering:
 	_TYPE = None
 	_SIZE = 60
 
-	def makeBox(self, dim, img, lh, iw, ih):
-		#iw,ih = img.size
+	def makeBox(self, dim, img, lh, iw, ih, next_x, next_y):
 		tw,th = dim
 		bg = (255,255,153)
-		#locs = [((iw*.06),(ih*.06)),
-		#        ((iw*.985)-(tw+self._SIZE),(ih*.06)),
-		#	((iw*.06),(ih*.90)-(lh)),
-		#	((iw*.985)-(tw+self._SIZE),(ih*.90)-(lh)),
-		#	((iw*.06),(ih*.50)),
-		#	((iw*.985)-(tw+self._SIZE),(ih*.50))]
-		locs = [((iw,ih))]
+		locs = [((iw,ih)),((next_x-(25+tw+self._SIZE),ih)),
+			((iw,next_y-(25+th+self._SIZE))),((next_x-(25+tw+self._SIZE),next_y-(25+th+self._SIZE)))]
 		loc_x,loc_y = random.choice(locs)
 		draw = ImageDraw.Draw(img)
 		draw.rectangle([(loc_x,loc_y),
@@ -52,26 +46,6 @@ class Lettering:
 		self._FACE = type
 		self._TYPE = ImageFont.truetype(type,self._SIZE)
 
-	#def makeLettering(self, s, img):
-	#	def resize(s):
-	#		seed = random.randint(15,25)
-	#		frag = textwrap.wrap(s[0],seed)
-	#		return frag
-	#	iw,ih = img.size
-	#	tw, th = self._TYPE.getsize(max(s,key=len))
-	#	if tw > (iw-(iw*.025)):
-	#		s = resize(s)
-	#		self.makeLettering(s,img)
-	#	else:
-	#		sets = [self._TYPE.getsize(frag) for frag in s]
-	#		tw,th = max(sets)
-	#		if len(s) > 1: lh = ((len(s) * th) + self._SIZE)
-	#		else: lh = self._SIZE
-	#		img,loc = self.makeBox((tw,lh),img,lh)
-	#		img = self.setText(img,loc,s,lh)
-	#	return img
-
-
 	def makeLettering(self, s, img, artbox):
 		def resize(s):
 			seed = random.randint(15,25)
@@ -91,6 +65,6 @@ class Lettering:
 				tw,th = max(sets)
 				if len(s) > 1: lh = ((len(s) * th) + self._SIZE)
 				else: lh = self._SIZE
-				img, loc = self.makeBox((tw,lh),img,lh,(x-tw/tw)+25,(y-th/th)+25)
+				img, loc = self.makeBox((tw,lh),img,lh,x+25,y+25,next_x,next_y)
 				img = self.setText(img,loc,s,lh)
 		return img
