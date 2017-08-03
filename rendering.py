@@ -31,7 +31,7 @@ class Lettering:
 		#	((iw*.985)-(tw+self._SIZE),(ih*.90)-(lh)),
 		#	((iw*.06),(ih*.50)),
 		#	((iw*.985)-(tw+self._SIZE),(ih*.50))]
-		locs = [((iw,ih-(lh)))]
+		locs = [((iw,ih))]
 		loc_x,loc_y = random.choice(locs)
 		draw = ImageDraw.Draw(img)
 		draw.rectangle([(loc_x,loc_y),
@@ -80,17 +80,17 @@ class Lettering:
 		next_x, next_y = 0, 0
 		for box in artbox:
 			x = box[0][0]
-			y = box[1][0]
+			y = box[0][1]
 			next_x = box[1][0]
 			next_y = box[1][1]
 			tw, th = self._TYPE.getsize(max(s,key=len))
-			if tw > next_x-x:
+			if tw > (next_x-x)*.95:
 				s = resize(s)
 			else:
 				sets = [self._TYPE.getsize(frag) for frag in s]
 				tw,th = max(sets)
 				if len(s) > 1: lh = ((len(s) * th) + self._SIZE)
 				else: lh = self._SIZE
-				img, loc = self.makeBox((tw,lh),img,lh,x,y)
+				img, loc = self.makeBox((tw,lh),img,lh,(x-tw/tw)+25,(y-th/th)+25)
 				img = self.setText(img,loc,s,lh)
 		return img

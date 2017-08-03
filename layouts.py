@@ -51,12 +51,14 @@ class Page:
         			for tail in sum_to_n(n - i, size - 1, i):
 					yield [i] + tail
 		num_rows = 0
-		while num_rows == 0 or num_rows > n: num_rows = random.randint(1,self._MAXROWS)
+		while num_rows == 0 or num_rows > n:
+			num_rows = random.randint(1,self._MAXROWS)
 		try:
-			grid = random.choice([grid for grid in sum_to_n(n,num_rows) if max(grid) <= self._MAXCOLS-1])
+			grids = [grid for grid in sum_to_n(n,num_rows) if max(grid) <= self._MAXCOLS-1]
+			grid = random.choice(grids)
 			random.shuffle(grid)
 		except IndexError: self.divisions(n)
-		return(grid)
+		return grid
 
 	def draw(self, rows, cols, img):
 		artbox = []
