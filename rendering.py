@@ -46,13 +46,15 @@ class Lettering:
 		self._FACE = type
 		self._TYPE = ImageFont.truetype(type,self._SIZE)
 
-	def makeLettering(self, s, img, artbox):
+	def makeLettering(self, sents, img, artbox):
 		def resize(s):
 			seed = random.randint(15,25)
 			frag = textwrap.wrap(s[0],seed)
 			return frag
+		sent_id = 0
 		next_x, next_y = 0, 0
 		for box in artbox:
+			s = [sents[sent_id].strip()]
 			x = box[0][0]
 			y = box[0][1]
 			next_x = box[1][0]
@@ -67,4 +69,5 @@ class Lettering:
 				else: lh = self._SIZE
 				img, loc = self.makeBox((tw,lh),img,lh,x+25,y+25,next_x,next_y)
 				img = self.setText(img,loc,s,lh)
+			sent_id +=1
 		return img

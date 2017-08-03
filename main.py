@@ -3,6 +3,12 @@ from rendering import Lettering, Conversions
 from corpus import File, Textops
 from layouts import Page
 
-img, artbox = Page((3300,5100)).make(random.randint(1,8))
-img = Lettering('type/animeace.ttf').makeLettering(['A test with some longer text.'],img,artbox)
+text = File.read('text/montecarlo.txt')
+sentences = Textops.sentences(text)
+random.shuffle(sentences)
+panel_no = random.randint(1,8)
+narrative = sentences[0:panel_no]
+
+img, artbox = Page((3300,5100)).make(panel_no)
+img = Lettering('type/animeace.ttf').makeLettering(narrative,img,artbox)
 img.save('layouts/test.png')

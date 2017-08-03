@@ -12,4 +12,5 @@ class Textops:
 
 	@staticmethod
 	def sentences(text):
-		pass
+		sentences = re.findall(r'[^.!\?]+[\.!\?]',text)
+        	return sentences
