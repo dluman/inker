@@ -30,7 +30,8 @@ class Cropper:
 		img = Image.open(self._IMG_URL)
 		img = img.crop((0,0,self._X2-self._X1,
 				self._Y2-self._Y1))
-		img.save(self._IMG_URL)
+		try: img.save(self._IMG_URL)
+		except: pass
 		return img
 
 class Art:

@@ -3,7 +3,7 @@ import json
 import random
 import requests
 import shutil
-import webbrowser
+import sys
 
 class PhotoSearch:
 
@@ -26,16 +26,21 @@ class PhotoSearch:
 		self.SECRETS = auth['secret']
 
 
-	def doSearch(self):
+	def doSearch(self,artbox):
 		flickr = flickrapi.FlickrAPI(self.API_KEY,self.SECRETS,format='json')
 		searchStream = json.loads(flickr.photos.search(text=self.SEARCH_TERM,per_page=10,extras=self.PARAMS))
 		photos = searchStream['photos']['photo']
 
+		box_w = artbox[1][0] - artbox[0][0]
+		box_h = artbox[1][1] - artbox[0][1]
 		for photo in photos:
 			try:
 				if photo['ispublic'] and photo['url_o']:
-					if photo['width_o'] >= 3300 and photo['height_o'] >=5100: self.PHOTOS.append(photo['url_o'])
-			except: continue
+					photo_w = int(photo['width_o'])
+					photo_h = int(photo['height_o'])
+					if (photo_w,photo_h) >= (box_w,box_h):
+						self.PHOTOS.append(photo['url_o'])
+			except: continue #print sys.exc_info()
 
 		choice = random.choice(self.PHOTOS)
 		photo_bin = requests.get(choice, stream=True)
