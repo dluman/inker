@@ -15,6 +15,44 @@ class Conversions:
 		img = self._IMG.convert('1')
 		return img
 
+class Cropper:
+
+	_IMG_URL = None
+	_X1, _X2 = 0, 0
+	_Y1, _Y2 = 0, 0
+
+	def __init__(self,img_url,(x1,y1),(x2,y2)):
+		self._IMG_URL = img_url
+		self._X1, self._Y1 = (x1,y1)
+		self._X2, self._Y2 = (x2,y2)
+
+	def crop(self):
+		img = Image.open(self._IMG_URL)
+		img = img.crop((0,0,self._X2-self._X1,
+				self._Y2-self._Y1))
+		img.save(self._IMG_URL)
+		return img
+
+class Art:
+
+	_IMG_URLS = None
+	_LAYOUT = None
+
+	def __init__(self, img, img_urls):
+		self._LAYOUT = img
+		self._IMG_URLS = img_urls
+
+	def set(self, artbox):
+		paste_up = Image.new('RGBA',(3300,5100),(0,0,0,255))
+		layout = self._LAYOUT
+		paste_up.paste(self._LAYOUT,(0,0))
+		for box in range(len(artbox)):
+			x = artbox[box][0][0]
+			y = artbox[box][0][1]
+			img = Image.open(self._IMG_URLS[box])
+			paste_up.paste(img,(x,y))
+		return paste_up
+
 class Lettering:
 
 	_FACE = None

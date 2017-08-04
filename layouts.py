@@ -79,5 +79,5 @@ class Page:
 		rows,columns = self.gridify(grid)
 		img = Image.new('RGB',self._SIZE)
 		img, artbox = self.draw(rows,columns,img)
-		img.save('layouts/test.png')
+		#img.save('layouts/test.png')
 		return img, artbox
