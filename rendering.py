@@ -36,6 +36,13 @@ class Filters:
 		img = img.filter(filter)
 		img.save(self._IMG_URL)
 
+	'''
+	This code comes from:
+	https://stackoverflow.com/questions/9506841/using-python-pil-to-turn-a-rgb-image-into-a-pure-black-and-white-image
+
+	The answer which proposed this solution is further down the page as it is, surprisingly, not the accepted answer.
+	'''
+
 	def ink(self):
 		def imgArray(a,t):
 			for i in range(len(a)):
