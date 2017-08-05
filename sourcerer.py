@@ -25,11 +25,10 @@ class PhotoSearch:
 		self.API_KEY = auth['key']
 		self.SECRETS = auth['secret']
 
-
 	def doSearch(self,artbox):
 		self.PHOTOS = list()
 		flickr = flickrapi.FlickrAPI(self.API_KEY,self.SECRETS,format='json')
-		searchStream = json.loads(flickr.photos.search(text=self.SEARCH_TERM,per_page=100,extras=self.PARAMS))
+		searchStream = json.loads(flickr.photos.search(text=self.SEARCH_TERM,per_page=1000,extras=self.PARAMS))
 		photos = searchStream['photos']['photo']
 
 		box_w = artbox[1][0] - artbox[0][0]

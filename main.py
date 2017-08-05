@@ -1,5 +1,7 @@
 import random
 import string
+import sys
+import traceback
 from subprocess import call
 from grammar import Entity
 from rendering import Art, Lettering, Conversions, Cropper, Filters
@@ -7,7 +9,12 @@ from corpus import File, Textops
 from layouts import Page
 from sourcerer import PhotoSearch
 
-call(['rm','imgscratch/*.jpg'])
+print "DELETING IMAGE CACHE"
+call('rm imgscratch/*.jpg',shell=True)
+print "OK"
+print "DELETING LAYOUT CACHE"
+call('rm layouts/*.jpg', shell=True)
+print "OK"
 
 img_urls = list()
 
@@ -24,7 +31,7 @@ for layouts in range(10):
 
 	for p in range(panel_no):
 		try: w = random.choice(Entity.noun(narrative[p]))
-		except IndexError: print narrative[p]
+		except IndexError: pass #print narrative[p]
 		img_urls.append(PhotoSearch(''.join([ch for ch in w if ch not in exclude])).doSearch(artbox[p]))
 	try:
 		for i in range(len(img_urls)):
@@ -34,5 +41,5 @@ for layouts in range(10):
 		img = Lettering('type/animeace.ttf').makeLettering(narrative,img,artbox)
 		img.save('layouts/test'+str(layouts+1)+'.jpg')
 		print 'GENERATED: PAGE #%s' % str(layouts+1)
-	except: pass
+	except: print sys.exc_info()[0], traceback.print_tb(sys.exc_info()[2])
 	img_urls = list()

@@ -55,7 +55,7 @@ class Filters:
 		img = Image.open(self._IMG_URL)
 		img = img.convert('L')
 		img = numpy.array(img)
-		img = imgArray(img,200)
+		img = imgArray(img,110)
 		imsave(self._IMG_URL, img)
 
 class Cropper:
@@ -102,6 +102,7 @@ class Lettering:
 	_FACE = None
 	_TYPE = None
 	_SIZE = 60
+	_INDEX = 0
 
 	def makeBox(self, dim, img, lh, iw, ih, next_x, next_y):
 		tw,th = dim
@@ -130,26 +131,27 @@ class Lettering:
 
 	def makeLettering(self, sents, img, artbox):
 		def resize(s):
-			seed = random.randint(15,25)
+			seed = random.randint(10,20)
 			frag = textwrap.wrap(s[0],seed)
 			return frag
-		sent_id = 0
+		isPrinted = True
 		next_x, next_y = 0, 0
 		for box in artbox:
-			s = [sents[sent_id].strip()]
-			x = box[0][0]
-			y = box[0][1]
-			next_x = box[1][0]
-			next_y = box[1][1]
-			tw, th = self._TYPE.getsize(max(s,key=len))
-			if tw > (next_x-x)*.95:
-				s = resize(s)
-			else:
+			if len(artbox) > 2: isPrinted = bool(random.getrandbits(1))
+			if isPrinted:
+				s = [sents[self._INDEX].strip()]
+				x = box[0][0]
+				y = box[0][1]
+				next_x = box[1][0]
+				next_y = box[1][1]
+				tw, th = self._TYPE.getsize(max(s,key=len))
+				if tw > (next_x-x)*.90:
+					s = resize(s)
 				sets = [self._TYPE.getsize(frag) for frag in s]
 				tw,th = max(sets)
 				if len(s) > 1: lh = ((len(s) * th) + self._SIZE)
 				else: lh = self._SIZE
 				img, loc = self.makeBox((tw,lh),img,lh,x+25,y+25,next_x,next_y)
 				img = self.setText(img,loc,s,lh)
-			sent_id +=1
+			self._INDEX +=1
 		return img
