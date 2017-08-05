@@ -1,8 +1,10 @@
 import random
 import re
 import textwrap
+import numpy
 from collections import OrderedDict
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from scipy.misc import imsave
 
 class Conversions:
 
@@ -17,13 +19,37 @@ class Conversions:
 
 class Filters:
 
-	_IMG = None
+	_IMG_URL = None
 
-	def __INIT__(self,img):
-		self._IMG = img
+	def __init__(self,img):
+		self._IMG_URL = img
+
+	def gaussian(self):
+		img = Image.open(self._IMG_URL)
+		filter = ImageFilter.GaussianBlur(10.0)
+		img = img.filter(filter)
+		img.save(self._IMG_URL)
 
 	def saturate(self):
-		pass
+		img = Image.open(self._IMG_URL)
+		filter = ImgeFilter.MaxFilter(3)
+		img = img.filter(filter)
+		img.save(self._IMG_URL)
+
+	def ink(self):
+		def imgArray(a,t):
+			for i in range(len(a)):
+				for j in range(len(a[0])):
+					if a[i][j] > t:
+						a[i][j] = 255
+					else:
+						a[i][j] = 0
+			return a
+		img = Image.open(self._IMG_URL)
+		img = img.convert('L')
+		img = numpy.array(img)
+		img = imgArray(img,200)
+		imsave(self._IMG_URL, img)
 
 class Cropper:
 

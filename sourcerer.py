@@ -42,11 +42,16 @@ class PhotoSearch:
 					if photo_w > box_w and photo_h > box_h:
 						self.PHOTOS.append(photo['url_o'])
 			except: continue #print self.SEARCH_TERM, len(self.PHOTOS), sys.exc_info()
+		#print 'Searching %s (%d found)...' % (self.SEARCH_TERM,len(self.PHOTOS))
 
-		choice = random.choice(self.PHOTOS)
-		photo_bin = requests.get(choice, stream=True)
-		if photo_bin.status_code == 200:
-			with open('imgscratch/'+self.SEARCH_TERM+'.jpg','wb') as p:
-				photo_bin.raw.decode_content = True
-				shutil.copyfileobj(photo_bin.raw,p)
-		return 'imgscratch/'+self.SEARCH_TERM+'.jpg'
+
+		try:
+			choice = random.choice(self.PHOTOS)
+			photo_bin = requests.get(choice, stream=True)
+			if photo_bin.status_code == 200:
+				filename = str(abs(hash(choice)))
+				with open('imgscratch/'+filename+'.jpg','wb') as p:
+					photo_bin.raw.decode_content = True
+					shutil.copyfileobj(photo_bin.raw,p)
+			return 'imgscratch/'+filename+'.jpg'
+		except: pass
