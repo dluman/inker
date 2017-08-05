@@ -27,8 +27,9 @@ class PhotoSearch:
 
 
 	def doSearch(self,artbox):
+		self.PHOTOS = list()
 		flickr = flickrapi.FlickrAPI(self.API_KEY,self.SECRETS,format='json')
-		searchStream = json.loads(flickr.photos.search(text=self.SEARCH_TERM,per_page=10,extras=self.PARAMS))
+		searchStream = json.loads(flickr.photos.search(text=self.SEARCH_TERM,per_page=100,extras=self.PARAMS))
 		photos = searchStream['photos']['photo']
 
 		box_w = artbox[1][0] - artbox[0][0]
@@ -38,9 +39,9 @@ class PhotoSearch:
 				if photo['ispublic'] and photo['url_o']:
 					photo_w = int(photo['width_o'])
 					photo_h = int(photo['height_o'])
-					if (photo_w,photo_h) >= (box_w,box_h):
+					if photo_w > box_w and photo_h > box_h:
 						self.PHOTOS.append(photo['url_o'])
-			except: continue #print sys.exc_info()
+			except: continue #print self.SEARCH_TERM, len(self.PHOTOS), sys.exc_info()
 
 		choice = random.choice(self.PHOTOS)
 		photo_bin = requests.get(choice, stream=True)

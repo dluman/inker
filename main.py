@@ -1,19 +1,11 @@
 import random
 import string
 from subprocess import call
+from grammar import Entity
 from rendering import Art, Lettering, Conversions, Cropper
 from corpus import File, Textops
 from layouts import Page
 from sourcerer import PhotoSearch
-
-
-'''
-To Do
-
-REVERSE THE ORDER OF LAYOUT/IMAGE FIND. MAKE SEARCH LOOK FOR THE RIGHT SIZES INSTEAD OF JUST PICKING IMAGES
-WHICH I CAN'T USE ANYWAY.
-
-'''
 
 call(['rm','imgscratch/*.jpg'])
 
@@ -31,7 +23,8 @@ for layouts in range(10):
 	img, artbox = Page((3300,5100)).make(panel_no)
 
 	for p in range(panel_no):
-		w = random.choice(narrative[p].strip().split(' '))
+		try: w = random.choice(Entity.noun(narrative[p]))
+		except IndexError: print narrative[p]
 		img_urls.append(PhotoSearch(''.join([ch for ch in w if ch not in exclude])).doSearch(artbox[p]))
 	for i in range(len(img_urls)):
 		Cropper(img_urls[i],artbox[i][0],artbox[i][1]).crop()

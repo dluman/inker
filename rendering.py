@@ -15,6 +15,16 @@ class Conversions:
 		img = self._IMG.convert('1')
 		return img
 
+class Filters:
+
+	_IMG = None
+
+	def __INIT__(self,img):
+		self._IMG = img
+
+	def saturate(self):
+		pass
+
 class Cropper:
 
 	_IMG_URL = None
