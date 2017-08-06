@@ -1,4 +1,3 @@
-import cv2
 import random
 import re
 import textwrap
@@ -24,33 +23,6 @@ class Filters:
 
 	def __init__(self,img):
 		self._IMG_URL = img
-
-	'''
-	This code comes from:
-	http://www.geeksforgeeks.org/cartooning-an-image-using-opencv-python/
-
-	It is a slight modification of the effect that the OP was going for.
-	'''
-
-	def saturate(self):
-		img = cv2.imread(self._IMG_URL)
-		steps = 2
-		filters = 50
-		for _ in xrange(steps):
-			img = cv2.pyrDown(img)
-		for _ in xrange(filters):
-			img = cv2.bilateralFilter(img,9,9,7)
-		for _ in xrange(steps):
-			img = cv2.pyrUp(img)
-		img_bw = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-		img_bl = cv2.medianBlur(img_bw,3)
-		edges = cv2.adaptiveThreshold(img_bl,255,
-						cv2.ADAPTIVE_THRESH_MEAN_C,
-						cv2.THRESH_BINARY,5,2)
-		(x,y,z) = img.shape
-		edges = cv2.cvtColor(edges,cv2.COLOR_GRAY2RGB)
-		img = cv2.bitwise_and(img,edges)
-		cv2.imwrite(self._IMG_URL,img)
 
 	'''
 	This code comes from:
@@ -127,8 +99,8 @@ class Lettering:
 			return (dim1_min <= dim2_max) and (dim2_min <= dim1_max)
 		for box in self._BOXES:
 			dx1, dy1 = box[0][0], box[0][1]
-			dx2, dy2 = box[1][0], box[1][1]
-			oprint = overprint(dx1,x1,dx2,x2) and overprint(dy2,y2,dy1,y1)
+			dx2, dy2 - box[1][0], box[1][1]
+			oprint = overprint(dx1,x1,dx2,x2) and overprint(dy1,y1,dy2,y2)
 		return oprint
 
 	def makeBox(self, dim, img, lh, iw, ih, next_x, next_y):
@@ -165,10 +137,9 @@ class Lettering:
 		isPrinted = True
 		next_x, next_y = 0, 0
 		for box in artbox:
-			if len(artbox) >= 3: isPrinted = bool(random.getrandbits(1))
+			if len(artbox) > 2: isPrinted = bool(random.getrandbits(1))
 			if isPrinted:
 				s = [sents[self._INDEX].strip()]
-				print "SHOULD PRINT: %s" % s
 				x = box[0][0]
 				y = box[0][1]
 				next_x = box[1][0]

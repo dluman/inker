@@ -8,6 +8,7 @@ from rendering import Art, Lettering, Conversions, Cropper, Filters
 from corpus import File, Textops
 from layouts import Page
 from sourcerer import PhotoSearch
+from publish import Publish
 
 print "DELETING IMAGE CACHE"
 try:
@@ -22,7 +23,7 @@ except: print "FAILED"
 
 img_urls = list()
 
-text = File.read('text/montecarlo.txt')
+text = File.read('text/source.txt')
 sentences = Textops.sentences(text)
 
 for layouts in range(10):
