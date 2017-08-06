@@ -70,7 +70,9 @@ class Page:
 				#BOUNDING BOX
 				d.rectangle([(x1,y1),(x2,y2)],outline='black',fill='black')
 				#ARTBOX
-				d.rectangle([(x1+self._BORDER,y1+self._BORDER),(x2-self._BORDER,y2-self._BORDER)],outline='black',fill='white')
+				d.rectangle([(x1+self._BORDER,y1+self._BORDER),
+						(x2-self._BORDER,y2-self._BORDER)],
+						outline='black',fill='white')
 				artbox.append([(x1+self._BORDER,y1+self._BORDER),(x2-self._BORDER,y2-self._BORDER)])
 		return img, artbox
 

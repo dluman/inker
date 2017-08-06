@@ -10,11 +10,15 @@ from layouts import Page
 from sourcerer import PhotoSearch
 
 print "DELETING IMAGE CACHE"
-call('rm imgscratch/*.jpg',shell=True)
-print "OK"
+try:
+	call('rm imgscratch/*.jpg',shell=True)
+	print "OK"
+except: print "FAILED"
 print "DELETING LAYOUT CACHE"
-call('rm layouts/*.jpg', shell=True)
-print "OK"
+try:
+	call('rm layouts/*.jpg', shell=True)
+	print "OK"
+except: print "FAILED"
 
 img_urls = list()
 
@@ -36,7 +40,8 @@ for layouts in range(10):
 	try:
 		for i in range(len(img_urls)):
 			Cropper(img_urls[i],artbox[i][0],artbox[i][1]).crop()
-			Filters(img_urls[i]).ink()
+			Filters(img_urls[i]).saturate()
+			#Filters(img_urls[i]).halftone()
 		img = Art(img,img_urls).set(artbox)
 		img = Lettering('type/animeace.ttf').makeLettering(narrative,img,artbox)
 		img.save('layouts/test'+str(layouts+1)+'.jpg')

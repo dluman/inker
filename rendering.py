@@ -1,3 +1,4 @@
+import cv2
 import random
 import re
 import textwrap
@@ -24,17 +25,33 @@ class Filters:
 	def __init__(self,img):
 		self._IMG_URL = img
 
-	def gaussian(self):
-		img = Image.open(self._IMG_URL)
-		filter = ImageFilter.GaussianBlur(10.0)
-		img = img.filter(filter)
-		img.save(self._IMG_URL)
+	'''
+	This code comes from:
+	http://www.geeksforgeeks.org/cartooning-an-image-using-opencv-python/
+
+	It is a slight modification of the effect that the OP was going for.
+	'''
 
 	def saturate(self):
-		img = Image.open(self._IMG_URL)
-		filter = ImgeFilter.MaxFilter(3)
-		img = img.filter(filter)
-		img.save(self._IMG_URL)
+		img = cv2.imread(self._IMG_URL)
+		steps = 2
+		filters = 50
+		for _ in xrange(steps):
+			img = cv2.pyrDown(img)
+		for _ in xrange(filters):
+			img = cv2.bilateralFilter(img,9,9,7)
+		for _ in xrange(steps):
+			img = cv2.pyrUp(img)
+		img_bw = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+		img_bl = cv2.medianBlur(img_bw,3)
+		edges = cv2.adaptiveThreshold(img_bl,255,
+						cv2.ADAPTIVE_THRESH_MEAN_C,
+						cv2.THRESH_BINARY,9,2)
+		(x,y,z) = img.shape
+		edges = cv2.resize(edges,(y,x))
+		edges = cv2.cvtColor(edges,cv2.COLOR_GRAY2RGB)
+		cv2.bitwise_and(img,edges)
+		cv2.imwrite(self._IMG_URL,img)
 
 	'''
 	This code comes from:
@@ -43,7 +60,7 @@ class Filters:
 	The answer which proposed this solution is further down the page as it is, surprisingly, not the accepted answer.
 	'''
 
-	def ink(self):
+	def halftone(self):
 		def imgArray(a,t):
 			for i in range(len(a)):
 				for j in range(len(a[0])):
@@ -101,8 +118,19 @@ class Lettering:
 
 	_FACE = None
 	_TYPE = None
-	_SIZE = 60
+	_SIZE = 50
 	_INDEX = 0
+	_BOXES = list()
+
+	def isOverprint(self,x1,y1,x2,y2):
+		oprint = False
+		def overprint(dim1_min,dim1_max,dim2_min,dim2_max):
+			return (dim1_min <= dim2_max) and (dim2_min <= dim1_max)
+		for box in self._BOXES:
+			dx1, dy1 = box[0][0], box[0][1]
+			dx2, dy2 = box[1][0], box[1][1]
+			oprint = overprint(dx1,x1,dx2,x2) and overprint(dy2,y2,dy1,y1)
+		return oprint
 
 	def makeBox(self, dim, img, lh, iw, ih, next_x, next_y):
 		tw,th = dim
@@ -115,6 +143,7 @@ class Lettering:
 		                (loc_x+(tw+self._SIZE),loc_y+(th+self._SIZE))],
 						outline='black',
 						fill=bg)
+		self._BOXES.append( ((loc_x,loc_y) , (loc_x+(tw+self._SIZE),loc_y+(th+self._SIZE))) )
 		return img,(loc_x,loc_y)
 
 	def setText(self, img, loc, s, lh):
@@ -131,13 +160,13 @@ class Lettering:
 
 	def makeLettering(self, sents, img, artbox):
 		def resize(s):
-			seed = random.randint(10,20)
+			seed = random.randint(15,25)
 			frag = textwrap.wrap(s[0],seed)
 			return frag
 		isPrinted = True
 		next_x, next_y = 0, 0
 		for box in artbox:
-			if len(artbox) > 2: isPrinted = bool(random.getrandbits(1))
+			if len(artbox) >= 3: isPrinted = bool(random.getrandbits(1))
 			if isPrinted:
 				s = [sents[self._INDEX].strip()]
 				x = box[0][0]
@@ -151,7 +180,8 @@ class Lettering:
 				tw,th = max(sets)
 				if len(s) > 1: lh = ((len(s) * th) + self._SIZE)
 				else: lh = self._SIZE
-				img, loc = self.makeBox((tw,lh),img,lh,x+25,y+25,next_x,next_y)
+				if self.isOverprint(x+25,y+25,next_x,next_y): continue
+				else: img, loc = self.makeBox((tw,lh),img,lh,x+25,y+25,next_x,next_y)
 				img = self.setText(img,loc,s,lh)
 			self._INDEX +=1
 		return img
